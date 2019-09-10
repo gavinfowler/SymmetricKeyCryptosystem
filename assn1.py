@@ -71,7 +71,7 @@ def findFromPolybius(word):
 key = "BALL"
   
 # Encryption 
-def encryptMessage(msg):
+def encryptMessage(msg, key):
     """
     Test function for columnar transposition
     """
@@ -82,7 +82,7 @@ def encryptMessage(msg):
     for letter in key:
         arr.append([letter])
     count = 0
-    
+
     while len(msg) > 0:
         letter = msg[0]
         msg = msg[1:]
@@ -135,7 +135,7 @@ def main():
 
     # encrypt(key)
 
-    encryptMessage("This is a test")
+    encryptMessage("This is a test", "BALL")
     
     # encryptCT("BALL", "THIS CODE")
     # print(encryptMessage("THIS IS A TEST MESSAGE"))
