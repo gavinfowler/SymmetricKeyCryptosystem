@@ -75,39 +75,34 @@ def encryptMessage(msg):
     """
     Test function for columnar transposition
     """
-    cipher = "" 
+    keylen = len(key)
+    msg = msg.replace(" ", "")
+    arr = []
+
+    for letter in key:
+        arr.append([letter])
+    count = 0
+    
+    while len(msg) > 0:
+        letter = msg[0]
+        msg = msg[1:]
+        arr[count].append(letter)
+
+        count += 1
+        if count >= 4:
+            count = 0
+        
+    arr.sort()
+    cipher = ''
+
+    for i in range(0,len(arr)):
+        for j in range(1,len(arr[i])):
+            cipher += arr[i][j]
   
-    # track key indices 
-    k_indx = 0
-  
-    msg_len = float(len(msg))
-    msg_lst = list(msg)
-    key_lst = sorted(list(key))
-  
-    # calculate column of the matrix 
-    col = len(key) 
-      
-    # calculate maximum row of the matrix 
-    row = int(math.ceil(msg_len / col)) 
-  
-    # add the padding character '_' in empty 
-    # the empty cell of the matix  
-    fill_null = int((row * col) - msg_len) 
-    msg_lst.extend('_' * fill_null) 
-  
-    # create Matrix and insert message and  
-    # padding characters row-wise  
-    matrix = [msg_lst[i: i + col]  
-              for i in range(0, len(msg_lst), col)] 
-  
-    # read matrix column-wise using key 
-    for _ in range(col): 
-        curr_idx = key.index(key_lst[k_indx]) 
-        cipher += ''.join([row[curr_idx]  
-                          for row in matrix]) 
-        k_indx += 1
-  
-    return cipher 
+    print(f'Cipher: {cipher.lower()}')
+    newCipher = ' '.join(cipher[i:i+keylen] for i in range(0, len(cipher), keylen))
+    print(f'newCipher: {newCipher.lower()}')
+    return newCipher 
 
 def options():
     """
@@ -122,7 +117,6 @@ def options():
             '> ')
         if int(choice) > 0 and int(choice) < 4:
             acceptableChoice = True
-            print(int(choice))
         else:
             print('\nPlease choose an acceptable option\n')
     return choice
@@ -136,9 +130,13 @@ def main():
     elif choice == '3':
         print('Encrypt then decrypt a message')
 
-    key = input('Enter a composite key: ')
+    # key = input('Enter a composite key: ')
     # plaintext = input('Enter a plaintext message: ')
-    encrypt(key)
+
+    # encrypt(key)
+
+    encryptMessage("This is a test")
+    
     # encryptCT("BALL", "THIS CODE")
     # print(encryptMessage("THIS IS A TEST MESSAGE"))
     # print(encryptMessage("THIS"))
