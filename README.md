@@ -1,5 +1,10 @@
 # CS5640 Assignment 1
 
+Run with:
+```sh
+python3 assn1.py
+```
+
 In this assignment, you need to write a computer programming code to build a cryptosystem
 that accommodates multiple steps, each representing a distinct cryptography technique. So, the
 system needs a composite key - multiple keys placed adjacent to the next - one for each crypto
