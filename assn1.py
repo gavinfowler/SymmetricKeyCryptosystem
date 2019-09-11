@@ -2,6 +2,7 @@ import random
 import string
 import sys
 import math
+import numpy as np
 
 ############# CONSTANTS ##############
 POLYBIUS = [
@@ -13,69 +14,23 @@ POLYBIUS = [
     ['M', '7', 'K', 'W', '6', 'L'],
 ]
 
-def encrypt(key):
+####### ENCRYPTION #########
+def encrypt(msg, key):
     """
     Function to encrypt a plaintext message using a key
     """
-    compositeKeyGen(key)
-    print('encrypt')
-
-def decrypt():
-    """
-    Function to decrypt a plaintext message using a key
-    """
-    print('decrypt')
-
-def compositeKeyGen(key):
-    """
-    Function generate key for columnar transposition
-    """
-    pad = key[-2:]
-    key = key[:-2]
-    print(f'Pad: {pad}')
-    print(f'Key: {key}')
-    keyForColumn = ''
-    for i in range(0, len(key), 2):
-        keyForColumn += POLYBIUS[int(key[i+1])][int(key[i])]
-    print(f'Key for columnar transposition: {keyForColumn}')
-    print(f'pad to binary: {"{0:06b}".format(int(pad))}')
-    # for i in keyForColumn:
-    #     findFromPolybius(i)
-    binaryKey = findFromPolybius(keyForColumn)
-    print(f'Key to Binary: {binaryKey}')
+    newKey = compositeKeyGen(key)
+    print(f'newKey: {newKey}')
+    cipher = columnarTransposition(msg, newKey['keyForColumn'])
+    print(f'cipher: {cipher}')
+    result = findFromPolybius(cipher)
+    print(f'result: {result}')
+    return result
 
 def columnarTransposition(msg, key):
     """
     Function to encrypt a message using columnar transposition using a specific key
     """
-    print('columnarTransposition')
-
-def findFromPolybius(word):
-    """
-    Function to find the coordinates of each letter in a word from the polybius square
-    """
-    total = ''
-    indexes = []
-    for letter in word:
-        index = [(iy,ix) for ix, row in enumerate(POLYBIUS) for iy, i in enumerate(row) if i == letter][0]
-        number = str(index[0]) + str(index[1])
-        total += '{0:06b}'.format(int(number))
-        total += ' '
-        print('{0:06b}'.format(int(number)))
-        print(f'{index[0]} and {index[1]}')
-        indexes.append(index)
-    # print(f'findFromPolybius: {total}')
-    print(indexes)
-    return total
-  
-key = "BALL"
-  
-# Encryption 
-def encryptMessage(msg, key):
-    """
-    Test function for columnar transposition
-    """
-    keylen = len(key)
     msg = msg.replace(" ", "")
     arr = []
 
@@ -98,11 +53,65 @@ def encryptMessage(msg, key):
     for i in range(0,len(arr)):
         for j in range(1,len(arr[i])):
             cipher += arr[i][j]
-  
-    print(f'Cipher: {cipher.lower()}')
-    newCipher = ' '.join(cipher[i:i+keylen] for i in range(0, len(cipher), keylen))
-    print(f'newCipher: {newCipher.lower()}')
-    return newCipher 
+    
+    cipher = cipher.lower()
+    return cipher
+
+def xor(binaryMsg, binaryKey):
+    """
+    function to do an XOR on binary
+    """
+
+
+
+############ DECRYPTION #################
+def decrypt():
+    """
+    Function to decrypt a plaintext message using a key
+    """
+    print('decrypt')
+
+####### GENERAL FUNCTIONS ##########
+def compositeKeyGen(key):
+    """
+    Function generate key for columnar transposition
+    """
+    pad = '{0:06b}'.format(int(key[-2:]))
+    key = key[:-2]
+    # print(f'Pad: {pad}')
+    # print(f'Key: {key}')
+    keyForColumn = ''
+    for i in range(0, len(key), 2):
+        keyForColumn += POLYBIUS[int(key[i+1])][int(key[i])]
+    # print(f'Key for columnar transposition: {keyForColumn}')
+    return {'keyForColumn':keyForColumn, 'pad':pad}
+
+
+def findFromPolybius(word):
+    """
+    Function to find the coordinates of each letter in a word from the polybius square
+    """
+    # arrA = np.array(POLYBIUS)
+    # x = "T"
+    # result = np.where((arrA == x))
+    # print(result[0][0], result[1][0])
+
+    total = ''
+    indexes = []
+    word = word.upper()
+    for letter in word:
+        index = [(iy,ix) for ix, row in enumerate(POLYBIUS) for iy, i in enumerate(row) if i == letter][0]
+        number = str(index[0]) + str(index[1])
+        total += '{0:06b}'.format(int(number))
+        total += ' '
+        # print('{0:06b}'.format(int(number)))
+        # print(f'{index[0]} and {index[1]}')
+        indexes.append(index)
+    # print(f'findFromPolybius: {total}')
+    # print(indexes)
+    return total
+
+####### MAIN FUNCTIONS #########
 
 def options():
     """
@@ -123,23 +132,28 @@ def options():
 
 def main():
     choice = options()
+    key, plaintext, cipher = '', '', ''
+
     if choice == '1':
+        key = input('Enter a composite key: ')
+        plaintext = input('Enter a plaintext message: ')
+        print(len(key))
+        if len(key) <= 3 or len(plaintext) <= 0:
+            raise Exception("The key was not long enough to generate a key and a pad or the message was empty")
         print('Encyrpt a message')
+        print(f'Original: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
     elif choice == '2':
+        key = input('Enter a composite key: ')
+        cipher = input('Enter a cipher: ')
         print(' Decrypt a message')
     elif choice == '3':
+        key = input('Enter a composite key: ')
+        plaintext = input('Enter a plaintext message: ')
         print('Encrypt then decrypt a message')
 
-    # key = input('Enter a composite key: ')
-    # plaintext = input('Enter a plaintext message: ')
-
     # encrypt(key)
-
-    encryptMessage("This is a test", "BALL")
-    
-    # encryptCT("BALL", "THIS CODE")
-    # print(encryptMessage("THIS IS A TEST MESSAGE"))
-    # print(encryptMessage("THIS"))
+    # compositeKeyGen(key)
+    # encryptMessage("This is a test", "BALL")
 
 if __name__ == '__main__':
   main()
