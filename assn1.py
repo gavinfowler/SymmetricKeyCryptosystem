@@ -77,18 +77,22 @@ def testEncryption():
     compositeKeyGenResult = compositeKeyGen("1422555515")
     assert compositeKeyGenResult['keyForColumn'] == 'BALL'
     assert compositeKeyGenResult['pad'] == '001111'
+    print('compositeKeyGen passed')
 
     # Test columnarTransposition
     columnarTranspositionResult = columnarTransposition("This is a TeSt", 'BALL')
     assert columnarTranspositionResult == 'hsstieiatst'
+    print('columnarTransposition passed')
 
     # Test findFromPolybius
     findFromPolybiusResult = findFromPolybius('ERFZM')
     assert findFromPolybiusResult == ['000000', '000010', '000011', '000100', '000101']
+    print('findFromPolybius passed')
 
     # Test xor
     xorResult = xor(['000000', '000010', '000011', '000100', '000101'], '001111')
     assert xorResult == "1513121110"
+    print('xor passed')
 
 
 ############ DECRYPTION #################
@@ -106,6 +110,7 @@ def decrypt(msg, key):
 def compositeKeyGen(key):
     """
     Function generate key for columnar transposition
+    Test with entering a '0' on selection
     """
     pad = '{0:06b}'.format(int(key[-2:]))
     key = key[:-2]
@@ -121,6 +126,7 @@ def compositeKeyGen(key):
 def findFromPolybius(word):
     """
     Function to find the coordinates of each letter in a word from the polybius square
+    Test with entering a '0' on selection
     """
     # arrA = np.array(POLYBIUS)
     # x = "T"
@@ -154,6 +160,7 @@ def options():
     acceptableChoice = False
     while not acceptableChoice:
         choice = input('Choose an option:\n' +
+            '0. Test Functions\n' +
             '1. Encyrpt a message\n' +
             '2. Decrypt a message\n' +
             '3. Encrypt then decrypt a message\n' +
