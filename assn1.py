@@ -2,7 +2,6 @@ import random
 import string
 import sys
 import math
-import numpy as np
 
 ############# CONSTANTS ##############
 POLYBIUS = [
@@ -154,10 +153,6 @@ def findFromPolybius(word):
     Function to find the coordinates of each letter in a word from the polybius square
     Test with entering a '0' on selection
     """
-    # arrA = np.array(POLYBIUS)
-    # x = "T"
-    # result = np.where((arrA == x))
-    # print(result[0][0], result[1][0])
 
     total = ''
     indexes = []
