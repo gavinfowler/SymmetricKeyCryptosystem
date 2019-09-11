@@ -25,7 +25,9 @@ def encrypt(msg, key):
     print(f'cipher: {cipher}')
     result = findFromPolybius(cipher)
     print(f'result: {result}')
-    return result
+    cipher = xor(result, newKey['pad'])
+    print(f'cipher: {cipher}')
+    return cipher
 
 def columnarTransposition(msg, key):
     """
@@ -41,10 +43,12 @@ def columnarTransposition(msg, key):
     while len(msg) > 0:
         letter = msg[0]
         msg = msg[1:]
+        print(arr)
+        print(count)
         arr[count].append(letter)
 
         count += 1
-        if count >= 4:
+        if count >= len(key):
             count = 0
         
     arr.sort()
@@ -61,15 +65,21 @@ def xor(binaryMsg, binaryKey):
     """
     function to do an XOR on binary
     """
-
+    print(binaryMsg)
+    print(binaryKey)
+    return binaryMsg
 
 
 ############ DECRYPTION #################
-def decrypt():
+def decrypt(msg, key):
     """
     Function to decrypt a plaintext message using a key
     """
-    print('decrypt')
+    print('\nBegin decrypt')
+    print(msg)
+    print(key)
+    print('End decrypt')
+    return msg
 
 ####### GENERAL FUNCTIONS ##########
 def compositeKeyGen(key):
@@ -150,10 +160,9 @@ def main():
         key = input('Enter a composite key: ')
         plaintext = input('Enter a plaintext message: ')
         print('Encrypt then decrypt a message')
-
-    # encrypt(key)
-    # compositeKeyGen(key)
-    # encryptMessage("This is a test", "BALL")
+        result = encrypt(plaintext,key)
+        result = decrypt(result, key)
+        print(f'Result: {result}')
 
 if __name__ == '__main__':
   main()
