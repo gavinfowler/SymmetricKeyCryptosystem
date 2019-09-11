@@ -15,6 +15,8 @@ POLYBIUS = [
 ]
 
 ####### ENCRYPTION #########
+
+
 def encrypt(msg, key):
     """
     Function to encrypt a plaintext message using a key
@@ -28,6 +30,7 @@ def encrypt(msg, key):
     cipher = xor(result, newKey['pad'])
     print(f'cipher: {cipher}')
     return cipher
+
 
 def columnarTransposition(msg, key):
     """
@@ -48,16 +51,17 @@ def columnarTransposition(msg, key):
         count += 1
         if count >= len(key):
             count = 0
-        
+
     arr.sort()
     cipher = ''
 
-    for i in range(0,len(arr)):
-        for j in range(1,len(arr[i])):
+    for i in range(0, len(arr)):
+        for j in range(1, len(arr[i])):
             cipher += arr[i][j]
-    
+
     cipher = cipher.lower()
     return cipher
+
 
 def xor(binaryArr, binaryKey):
     """
@@ -65,9 +69,10 @@ def xor(binaryArr, binaryKey):
     """
     result = ''
     for i in binaryArr:
-        xor = int(i,2) ^ int(binaryKey,2)
+        xor = int(i, 2) ^ int(binaryKey, 2)
         result += str(xor)
     return result
+
 
 def testEncryption():
     """
@@ -80,33 +85,54 @@ def testEncryption():
     print('compositeKeyGen passed')
 
     # Test columnarTransposition
-    columnarTranspositionResult = columnarTransposition("This is a TeSt", 'BALL')
+    columnarTranspositionResult = columnarTransposition(
+        "This is a TeSt", 'BALL')
     assert columnarTranspositionResult == 'hsstieiatst'
     print('columnarTransposition passed')
 
     # Test findFromPolybius
     findFromPolybiusResult = findFromPolybius('ERFZM')
-    assert findFromPolybiusResult == ['000000', '000010', '000011', '000100', '000101']
+    assert findFromPolybiusResult == [
+        '000000', '000010', '000011', '000100', '000101']
     print('findFromPolybius passed')
 
     # Test xor
-    xorResult = xor(['000000', '000010', '000011', '000100', '000101'], '001111')
+    xorResult = xor(['000000', '000010', '000011',
+                     '000100', '000101'], '001111')
     assert xorResult == "1513121110"
     print('xor passed')
 
 
 ############ DECRYPTION #################
+def cipherToBinary(cipher):
+    """
+    Function convert a cipher into binary
+    """
+    pairs = []
+    binary = []
+    while cipher:
+        pairs.append(cipher[:2])
+        cipher = cipher[2:]
+    for element in pairs:
+        binary.append('{0:06b}'.format(int(element)))
+    return binary
+
+
 def decrypt(msg, key):
     """
     Function to decrypt a plaintext message using a key
     """
-    print('\nBegin decrypt')
     print(msg)
     print(key)
+    print('\nBegin decrypt')
+    binary = cipherToBinary(msg)
+    print(binary)
     print('End decrypt')
     return msg
 
 ####### GENERAL FUNCTIONS ##########
+
+
 def compositeKeyGen(key):
     """
     Function generate key for columnar transposition
@@ -118,9 +144,9 @@ def compositeKeyGen(key):
     # print(f'Key: {key}')
     keyForColumn = ''
     for i in range(0, len(key), 2):
-        keyForColumn += POLYBIUS[int(key[i+1])][int(key[i])]
+        keyForColumn += POLYBIUS[int(key[i + 1])][int(key[i])]
     # print(f'Key for columnar transposition: {keyForColumn}')
-    return {'keyForColumn':keyForColumn, 'pad':pad}
+    return {'keyForColumn': keyForColumn, 'pad': pad}
 
 
 def findFromPolybius(word):
@@ -138,7 +164,8 @@ def findFromPolybius(word):
     arr = []
     word = word.upper()
     for letter in word:
-        index = [(iy,ix) for ix, row in enumerate(POLYBIUS) for iy, i in enumerate(row) if i == letter][0]
+        index = [(iy, ix) for ix, row in enumerate(POLYBIUS)
+                 for iy, i in enumerate(row) if i == letter][0]
         number = str(index[0]) + str(index[1])
         total += '{0:06b}'.format(int(number))
         total += ' '
@@ -153,6 +180,7 @@ def findFromPolybius(word):
 
 ####### MAIN FUNCTIONS #########
 
+
 def options():
     """
     Print out and get choice
@@ -160,16 +188,17 @@ def options():
     acceptableChoice = False
     while not acceptableChoice:
         choice = input('Choose an option:\n' +
-            '0. Test Functions\n' +
-            '1. Encyrpt a message\n' +
-            '2. Decrypt a message\n' +
-            '3. Encrypt then decrypt a message\n' +
-            '> ')
+                       '0. Test Functions\n' +
+                       '1. Encyrpt a message\n' +
+                       '2. Decrypt a message\n' +
+                       '3. Encrypt then decrypt a message\n' +
+                       '> ')
         if int(choice) > -1 and int(choice) < 4:
             acceptableChoice = True
         else:
             print('\nPlease choose an acceptable option\n')
     return choice
+
 
 def main():
     choice = options()
@@ -180,22 +209,26 @@ def main():
         plaintext = input('Enter a plaintext message: ')
         print(len(key))
         if len(key) <= 3 or len(plaintext) <= 0:
-            raise Exception("The key was not long enough to generate a key and a pad or the message was empty")
+            raise Exception(
+                "The key was not long enough to generate a key and a pad or the message was empty")
         print('Encyrpt a message')
-        print(f'Original: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
+        print(
+            f'Original: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
     elif choice == '2':
         key = input('Enter a composite key: ')
         cipher = input('Enter a cipher: ')
+        decrypt(cipher, key)
         print(' Decrypt a message')
     elif choice == '3':
         key = input('Enter a composite key: ')
         plaintext = input('Enter a plaintext message: ')
         print('Encrypt then decrypt a message')
-        result = encrypt(plaintext,key)
+        result = encrypt(plaintext, key)
         result = decrypt(result, key)
         print(f'Result: {result}')
     elif choice == "0":
         testEncryption()
 
+
 if __name__ == '__main__':
-  main()
+    main()
