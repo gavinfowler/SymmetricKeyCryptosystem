@@ -33,7 +33,7 @@ def columnarTransposition(msg, key):
     """
     Function to encrypt a message using columnar transposition using a specific key
     """
-    msg = msg.replace(" ", "")
+    msg = msg.replace(" ", "").lower()
     arr = []
 
     for letter in key:
@@ -43,8 +43,6 @@ def columnarTransposition(msg, key):
     while len(msg) > 0:
         letter = msg[0]
         msg = msg[1:]
-        print(arr)
-        print(count)
         arr[count].append(letter)
 
         count += 1
@@ -61,13 +59,36 @@ def columnarTransposition(msg, key):
     cipher = cipher.lower()
     return cipher
 
-def xor(binaryMsg, binaryKey):
+def xor(binaryArr, binaryKey):
     """
     function to do an XOR on binary
     """
-    print(binaryMsg)
-    print(binaryKey)
-    return binaryMsg
+    result = ''
+    for i in binaryArr:
+        xor = int(i,2) ^ int(binaryKey,2)
+        result += str(xor)
+    return result
+
+def testEncryption():
+    """
+    Function to test encryption
+    """
+    # Test compositeKeyGen
+    compositeKeyGenResult = compositeKeyGen("1422555515")
+    assert compositeKeyGenResult['keyForColumn'] == 'BALL'
+    assert compositeKeyGenResult['pad'] == '001111'
+
+    # Test columnarTransposition
+    columnarTranspositionResult = columnarTransposition("This is a TeSt", 'BALL')
+    assert columnarTranspositionResult == 'hsstieiatst'
+
+    # Test findFromPolybius
+    findFromPolybiusResult = findFromPolybius('ERFZM')
+    assert findFromPolybiusResult == ['000000', '000010', '000011', '000100', '000101']
+
+    # Test xor
+    xorResult = xor(['000000', '000010', '000011', '000100', '000101'], '001111')
+    assert xorResult == "1513121110"
 
 
 ############ DECRYPTION #################
@@ -108,18 +129,21 @@ def findFromPolybius(word):
 
     total = ''
     indexes = []
+    arr = []
     word = word.upper()
     for letter in word:
         index = [(iy,ix) for ix, row in enumerate(POLYBIUS) for iy, i in enumerate(row) if i == letter][0]
         number = str(index[0]) + str(index[1])
         total += '{0:06b}'.format(int(number))
         total += ' '
+        arr.append('{0:06b}'.format(int(number)))
         # print('{0:06b}'.format(int(number)))
         # print(f'{index[0]} and {index[1]}')
         indexes.append(index)
     # print(f'findFromPolybius: {total}')
     # print(indexes)
-    return total
+    # return total
+    return arr
 
 ####### MAIN FUNCTIONS #########
 
@@ -134,7 +158,7 @@ def options():
             '2. Decrypt a message\n' +
             '3. Encrypt then decrypt a message\n' +
             '> ')
-        if int(choice) > 0 and int(choice) < 4:
+        if int(choice) > -1 and int(choice) < 4:
             acceptableChoice = True
         else:
             print('\nPlease choose an acceptable option\n')
@@ -163,6 +187,8 @@ def main():
         result = encrypt(plaintext,key)
         result = decrypt(result, key)
         print(f'Result: {result}')
+    elif choice == "0":
+        testEncryption()
 
 if __name__ == '__main__':
   main()
