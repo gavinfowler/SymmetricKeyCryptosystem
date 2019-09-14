@@ -117,15 +117,63 @@ def cipherToBinary(cipher):
     return binary
 
 
+def keywordToNum(key):
+    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    kywrd_num_list = list(range(len(key)))
+    init = 0
+    for i in range(len(alpha)):
+        for j in range(len(key)):
+            if alpha[i] == key[j]:
+                init += 1
+                kywrd_num_list[j] = init
+    return kywrd_num_list
+
+
+def decryptColumnarTransposition(msg, key):
+    num_of_rows = math.ceil(len(msg)/len(key))
+
+    arr = [''] * num_of_rows
+    for i in range(num_of_rows):
+        arr[i] = [''] * len(key)
+        for j in range(len(key)):
+            arr[i][j] = ''
+
+    keyn = keywordToNum(key)
+    keyn_count = 1
+    msg_index = 0
+    while keyn_count < len(keyn)+1:
+        for i in range(len(keyn)):
+            if (keyn[i] == keyn_count):
+                for j in range(num_of_rows):
+                    if arr[j][i] == '' and msg_index < len(msg):
+                        arr[j][i] = msg[msg_index]
+                        msg_index = msg_index + 1
+                keyn_count = keyn_count + 1
+    
+    for i in range(num_of_rows):
+        arr[i] = ''.join(arr[i])
+
+    plaintext = ''.join(arr)
+    return plaintext
+
+
 def decrypt(msg, key):
     """
     Function to decrypt a plaintext message using a key
     """
     print(msg)
     print(key)
+    compositeKeyGenResult = compositeKeyGen(key)
     print('\nBegin decrypt')
     binary = cipherToBinary(msg)
     print(binary)
+    padkey = compositeKeyGenResult['pad']
+    #insert one time pad here
+    # padResult =
+    #insert getting string of letters from Polybius here
+    # polybiusResult = 
+    colKey = compositeKeyGenResult['keyForColumn']
+    decryptColumnarTransposition(polybiusResult, colKey)
     print('End decrypt')
     return msg
 
