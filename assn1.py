@@ -182,8 +182,9 @@ def decrypt(msg, key):
     compositeKeyGenResult = compositeKeyGen(key)
     print('\nBegin decrypt')
     binary = cipherToBinary(msg)
-    print(binary)
+    print(f'Binary: {binary}')
     padkey = compositeKeyGenResult['pad']
+    print(f'KeyGen: {padkey}')
     #insert one time pad here
     # padResult =
     #insert getting string of letters from Polybius here
@@ -194,6 +195,16 @@ def decrypt(msg, key):
     return msg
 
 ####### GENERAL FUNCTIONS ##########
+def validateKeyLen(key):
+    if len(key) % 2 != 0:
+        raise Exception(
+            'Error: Key given was of odd length')
+    if len(key) <= 0:
+        raise Exception(
+            'The key was not long enough to generate a key and a pad')
+    if not key.isdigit():
+        raise Exception(
+            'Error: key is not numeric')
 
 
 def compositeKeyGen(key):
@@ -203,6 +214,8 @@ def compositeKeyGen(key):
     """
     pad = '{0:06b}'.format(int(key[-2:]))
     key = key[:-2]
+    validateKeyLen(key)
+    print(key)
     # print(f'Pad: {pad}')
     # print(f'Key: {key}')
     keyForColumn = ''
@@ -266,10 +279,6 @@ def main():
     if choice == '1':
         key = input('Enter a composite key: ')
         plaintext = input('Enter a plaintext message: ')
-        print(len(key))
-        if len(key) <= 3 or len(plaintext) <= 0:
-            raise Exception(
-                "The key was not long enough to generate a key and a pad or the message was empty")
         print('Encyrpt a message')
         print(
             f'Original: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
