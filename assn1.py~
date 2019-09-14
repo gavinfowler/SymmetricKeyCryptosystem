@@ -144,17 +144,6 @@ def keywordToNum(key):
                 kywrd_num_list[j] = init
     return kywrd_num_list
 
-def decryptOneTimePad(msg, key):
-    intAry = []
-    rsltStr = ''
-    for x in msg:
-        intAry.append(int(x, 2) ^ int(key, 2))
-    for y in intAry:
-        intStr = str(y)
-        if len(intStr) == 1:
-            intStr = '0' + intStr
-        rsltStr += intStr
-    return rsltStr
 
 def decryptColumnarTransposition(msg, key):
     num_of_rows = math.ceil(len(msg)/len(key))
@@ -196,7 +185,8 @@ def decrypt(msg, key):
     print(f'Binary: {binary}')
     padkey = compositeKeyGenResult['pad']
     print(f'KeyGen: {padkey}')
-    padResult = decryptOneTimePad(binary, padKey)
+    #insert one time pad here
+    # padResult =
     #insert getting string of letters from Polybius here
     # polybiusResult = 
     colKey = compositeKeyGenResult['keyForColumn']
