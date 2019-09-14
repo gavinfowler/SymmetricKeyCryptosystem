@@ -58,7 +58,7 @@ def columnarTransposition(msg, key):
         for j in range(1, len(arr[i])):
             cipher += arr[i][j]
 
-    cipher = cipher.lower()
+    cipher = cipher.upper()
     return cipher
 
 
@@ -69,7 +69,10 @@ def xor(binaryArr, binaryKey):
     result = ''
     for i in binaryArr:
         xor = int(i, 2) ^ int(binaryKey, 2)
-        result += str(xor)
+        strXor = str(xor)
+        if len(strXor) == 1:
+            strXor = '0' + strXor
+        result += strXor
     return result
 
 
@@ -77,16 +80,25 @@ def testEncryption():
     """
     Function to test encryption
     """
+    # Unit Tests
     # Test compositeKeyGen
     compositeKeyGenResult = compositeKeyGen("1422555515")
     assert compositeKeyGenResult['keyForColumn'] == 'BALL'
     assert compositeKeyGenResult['pad'] == '001111'
+
+    compositeKeyGenResult = compositeKeyGen('22024422230021')
+    assert compositeKeyGenResult['keyForColumn'] == 'ARCANE'
+    assert compositeKeyGenResult['pad'] == '010101'
     print('compositeKeyGen passed')
 
     # Test columnarTransposition
     columnarTranspositionResult = columnarTransposition(
         "This is a TeSt", 'BALL')
-    assert columnarTranspositionResult == 'hsstieiatst'
+    assert columnarTranspositionResult == 'HSSTIEIATST'
+
+    columnarTranspositionResult = columnarTransposition(
+        "A SECRET MESSAGE", 'ARCANE')
+    assert columnarTranspositionResult == 'ATGCSEEEARSSME'
     print('columnarTransposition passed')
 
     # Test findFromPolybius
@@ -100,6 +112,10 @@ def testEncryption():
                      '000100', '000101'], '001111')
     assert xorResult == "1513121110"
     print('xor passed')
+
+    # Integration Test
+    cipher = encrypt('A SECRET MESSAGE', '22024422230021')
+    assert cipher == '0335625733212121032333331621'
 
 
 ############ DECRYPTION #################
