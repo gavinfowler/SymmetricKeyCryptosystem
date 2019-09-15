@@ -117,6 +117,11 @@ def testEncryption():
     cipher = encrypt('A SECRET MESSAGE', '22024422230021')
     assert cipher == '0335625733212121032333331621'
 
+    # End to end test
+    result = decrypt(encrypt('A SECRET MESSAGE', '22024422230021'), '22024422230021')
+    assert result == 'ASECRETMESSAGE'
+    print('end-to-end passed')
+
 
 ############ DECRYPTION #################
 def cipherToBinary(cipher):
