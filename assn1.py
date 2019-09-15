@@ -157,31 +157,74 @@ def decryptOneTimePad(msg, key):
     return rsltStr
 
 def decryptColumnarTransposition(msg, key):
-    num_of_rows = math.ceil(len(msg)/len(key))
+    tempMsg = msg
+    numRows = math.ceil(len(msg)/len(key))
+    colsWithExtras = len(msg) % len(key)
 
-    arr = [''] * num_of_rows
-    for i in range(num_of_rows):
-        arr[i] = [''] * len(key)
-        for j in range(len(key)):
-            arr[i][j] = ''
+    lettersWithExtras = []
+    extrasCount = 0
+    for i in key:
+        lettersWithExtras.append(i)
+        extrasCount += 1
+        if extrasCount >= colsWithExtras:
+            break
 
-    keyn = keywordToNum(key)
-    keyn_count = 1
-    msg_index = 0
-    while keyn_count < len(keyn)+1:
-        for i in range(len(keyn)):
-            if (keyn[i] == keyn_count):
-                for j in range(num_of_rows):
-                    if arr[j][i] == '' and msg_index < len(msg):
-                        arr[j][i] = msg[msg_index]
-                        msg_index = msg_index + 1
-                keyn_count = keyn_count + 1
-    
-    for i in range(num_of_rows):
-        arr[i] = ''.join(arr[i])
+    arr = []
+    count = 0
 
-    plaintext = ''.join(arr)
+    # Building array with key
+    for letter in key:
+        # letter = letter + str(count)
+        arr.append([letter])
+        count += 1
+    arr.sort()
+
+    # populating array
+    count = 0
+    for letter in arr:
+        numRowsForArr = numRows
+        if letter[0] in lettersWithExtras:
+            lettersWithExtras.remove(letter[0])
+        else:
+            numRowsForArr -= 1
+        tempLetters = tempMsg[0:numRowsForArr]
+        tempMsg = tempMsg[numRowsForArr:]
+        for i in tempLetters:
+            arr[count].append(i)
+        count += 1
+
+    # Sorting build array using key
+    newArr = []
+    for letter in key:
+        for i in range(0, len(arr)):
+            if arr[i][0] == letter:
+                temp = arr.pop(i)
+                newArr.append(temp)
+                break
+
+    # Getting values
+    plaintext = ''
+    rowCount = 1
+    colCount = 0
+    for i in range(0,len(msg)):
+        plaintext += newArr[colCount][rowCount]
+
+        colCount += 1
+
+        if colCount > len(key) - 1:
+            colCount = 0
+            rowCount += 1
+
     return plaintext
+
+def getFromPolybiusNumbersToLetters(numbers):
+    keyForColumn = ''
+    for i in range(0, len(numbers), 2):
+        # print(f'numbers[i ]: {numbers[i]}')
+        # print(f'numbers[i + 1]: {numbers[i + 1]}')
+        keyForColumn += POLYBIUS[int(numbers[i + 1])][int(numbers[i])]
+        # print(f'POLYBIUS[numbers[i + 1]][numbers[i]]: {POLYBIUS[int(numbers[i + 1])][int(numbers[i])]}')
+    return keyForColumn
 
 
 def decrypt(msg, key):
@@ -196,11 +239,15 @@ def decrypt(msg, key):
     print(f'Binary: {binary}')
     padkey = compositeKeyGenResult['pad']
     print(f'KeyGen: {padkey}')
-    padResult = decryptOneTimePad(binary, padKey)
+    padResult = decryptOneTimePad(binary, padkey)
+    print(f'padResult: {padResult}')
     #insert getting string of letters from Polybius here
-    # polybiusResult = 
+    polybiusResult = getFromPolybiusNumbersToLetters(padResult)
+    print(f'polybiusResult: {polybiusResult}')
     colKey = compositeKeyGenResult['keyForColumn']
-    decryptColumnarTransposition(polybiusResult, colKey)
+    print(f'colKey: {colKey}')
+    plaintext = decryptColumnarTransposition(polybiusResult, colKey)
+    print(f'plaintext: {plaintext}')
     print('End decrypt')
     return msg
 
@@ -225,7 +272,7 @@ def compositeKeyGen(key):
     pad = '{0:06b}'.format(int(key[-2:]))
     key = key[:-2]
     validateKeyLen(key)
-    print(key)
+    # print(key)
     # print(f'Pad: {pad}')
     # print(f'Key: {key}')
     keyForColumn = ''
@@ -306,6 +353,8 @@ def main():
         print(f'Result: {result}')
     elif choice == "0":
         testEncryption()
+        print()
+        decrypt('0335625733212121032333331621', '22024422230021')
 
 
 if __name__ == '__main__':
