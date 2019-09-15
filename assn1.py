@@ -21,13 +21,13 @@ def encrypt(msg, key):
     Function to encrypt a plaintext message using a key
     """
     newKey = compositeKeyGen(key)
-    print(f'newKey: {newKey}')
+    # print(f'newKey: {newKey}')
     cipher = columnarTransposition(msg, newKey['keyForColumn'])
-    print(f'cipher: {cipher}')
+    # print(f'cipher: {cipher}')
     result = findFromPolybius(cipher)
-    print(f'result: {result}')
+    # print(f'result: {result}')
     cipher = xor(result, newKey['pad'])
-    print(f'cipher: {cipher}')
+    # print(f'cipher: {cipher}')
     return cipher
 
 
@@ -231,25 +231,25 @@ def decrypt(msg, key):
     """
     Function to decrypt a plaintext message using a key
     """
-    print(msg)
-    print(key)
+    # print(msg)
+    # print(key)
     compositeKeyGenResult = compositeKeyGen(key)
-    print('\nBegin decrypt')
+    # print('\nBegin decrypt')
     binary = cipherToBinary(msg)
-    print(f'Binary: {binary}')
+    # print(f'Binary: {binary}')
     padkey = compositeKeyGenResult['pad']
-    print(f'KeyGen: {padkey}')
+    # print(f'KeyGen: {padkey}')
     padResult = decryptOneTimePad(binary, padkey)
-    print(f'padResult: {padResult}')
+    # print(f'padResult: {padResult}')
     #insert getting string of letters from Polybius here
     polybiusResult = getFromPolybiusNumbersToLetters(padResult)
-    print(f'polybiusResult: {polybiusResult}')
+    # print(f'polybiusResult: {polybiusResult}')
     colKey = compositeKeyGenResult['keyForColumn']
-    print(f'colKey: {colKey}')
+    # print(f'colKey: {colKey}')
     plaintext = decryptColumnarTransposition(polybiusResult, colKey)
-    print(f'plaintext: {plaintext}')
-    print('End decrypt')
-    return msg
+    # print(f'plaintext: {plaintext}')
+    # print('End decrypt')
+    return plaintext
 
 ####### GENERAL FUNCTIONS ##########
 def validateKeyLen(key):
@@ -336,25 +336,21 @@ def main():
     if choice == '1':
         key = input('Enter a composite key: ')
         plaintext = input('Enter a plaintext message: ')
-        print('Encyrpt a message')
         print(
-            f'Original: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
+            f'\nOriginal: {plaintext}\nEncrypted message: {encrypt(plaintext, key)}')
     elif choice == '2':
         key = input('Enter a composite key: ')
         cipher = input('Enter a cipher: ')
-        decrypt(cipher, key)
-        print(' Decrypt a message')
+        print(
+            f'\nCipher: {cipher}\nDecrypted message: {decrypt(cipher, key)}')
     elif choice == '3':
         key = input('Enter a composite key: ')
         plaintext = input('Enter a plaintext message: ')
-        print('Encrypt then decrypt a message')
-        result = encrypt(plaintext, key)
-        result = decrypt(result, key)
-        print(f'Result: {result}')
+        result = decrypt(encrypt(plaintext, key), key)
+        print(
+            f'\nOriginal: {plaintext}\nDecrypted message: {decrypt(encrypt(plaintext, key), key)}')
     elif choice == "0":
         testEncryption()
-        print()
-        decrypt('0335625733212121032333331621', '22024422230021')
 
 
 if __name__ == '__main__':
